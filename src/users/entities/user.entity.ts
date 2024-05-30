@@ -1,4 +1,4 @@
-import { StatusUser } from 'src/enums/users';
+import { StatusUser } from 'src/utils/enums/users';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -14,6 +14,9 @@ export class UserEntity {
 
   @Column({ type: 'varchar', length: 20, nullable: true, default: '' })
   phone: string;
+
+  @Column({ type: 'varchar', length: 3 })
+  age: string;
 
   @Column({
     type: 'enum',
