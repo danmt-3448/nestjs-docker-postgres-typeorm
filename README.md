@@ -1,11 +1,15 @@
-### Installing
-
+## Installing
 #### Packages
 ```bash
 npm install
 ```
 
-### Postgres
+## Constant
+```
+user: danmt
+```
+
+## Postgres
 
 ####
 ```bash
@@ -13,7 +17,7 @@ npm install
 ```
 #### Login Postgres
 ```bash
-psql -d my_nest_app1 -U dan -W
+psql -d my_nest_app1 -U danmt -W
 ```
 
 or when first install postgres
@@ -24,19 +28,34 @@ psql -U postgres
 
 #### Create user
 ```bash
-create user dan with password 'Aa@123456';
+create user danmt with password 'Aa@123456';
 ```
 
 #### Grant permissions
 ```bash
-alter user dan with superuser;
+alter user danmt with superuser;
 ```
 
-If cannot connect to db:
+If cannot interact to db:
 ```bash
-grant pg_read_all_data to dan;
+grant pg_read_all_data to danmt;
 ```
 
 ```bash
-grant pg_write_all_data to dan;
+grant pg_write_all_data to danmt;
+```
+
+### Check grant user
+```bash
+\du
+```
+
+### Check list db
+```bash
+\l
+```
+
+### Logout user in postgres
+```bash
+\q
 ```
