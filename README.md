@@ -9,6 +9,11 @@ npm install
 user: danmt
 ```
 
+## Run
+```bash
+  docker-compose up --build
+```
+
 ## Postgres
 
 ####

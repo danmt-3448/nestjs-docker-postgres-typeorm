@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CitiesService } from './cities.service';
 import { CitiesController } from './cities.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CityEntity } from 'src/cities/entities/city.entity';
+import { CityEntity } from 'src/api/cities/entities/city.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CityEntity])],

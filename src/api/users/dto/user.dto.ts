@@ -1,15 +1,15 @@
 import {
-  IsNotEmpty,
-  IsString,
-  IsOptional,
   IsEnum,
-  Length,
+  IsNotEmpty,
   IsNumber,
+  IsOptional,
+  IsString,
+  Length,
   Min,
 } from 'class-validator';
-import { StatusUser } from 'src/utils/enums/users';
+import { UserVerifyStatus } from 'src/utils/enums';
 
-export class CreateUserDto {
+export class UserDto {
   @IsNotEmpty()
   @IsString()
   username: string;
@@ -26,10 +26,9 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(10)
-  //validate min age
   age: number;
 
   @IsOptional()
-  @IsEnum(StatusUser)
-  status?: StatusUser;
+  @IsEnum(UserVerifyStatus)
+  status?: UserVerifyStatus;
 }

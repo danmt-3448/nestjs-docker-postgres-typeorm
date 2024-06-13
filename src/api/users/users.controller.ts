@@ -1,19 +1,15 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UsePipes,
-  ValidationPipe,
+  Get,
+  Param,
+  Patch,
   UseGuards,
 } from '@nestjs/common';
+import { JwtAccessTokenGuard } from '../auth/guards/jwt-access-token.guard';
+import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UsersGuard } from 'src/users/guard/users.guard';
 
 @Controller('users')
 // guard check all method in controller
@@ -21,14 +17,11 @@ import { UsersGuard } from 'src/users/guard/users.guard';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  @UseGuards(UsersGuard)
-  @UsePipes(new ValidationPipe())
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
+  // @SerializeOptions({
+  //   excludePrefixes: ['first', 'last'],
+  // })
   @Get()
+  @UseGuards(JwtAccessTokenGuard)
   findAll() {
     return this.usersService.findAll();
   }
@@ -39,8 +32,8 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  update(@Param('id') id: string, @Body() userDto: UserDto) {
+    return this.usersService.update(id, userDto);
   }
 
   @Delete(':id')
