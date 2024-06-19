@@ -1,10 +1,15 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   Param,
+  Patch,
+  Req,
   SerializeOptions,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { Public } from 'src/decorators/auths.decorator';
 import { JwtAccessTokenGuard } from '../auth/guards/jwt-access-token.guard';
@@ -12,6 +17,8 @@ import { UsersService } from './users.service';
 import { Roles } from 'src/decorators/roles.decorator';
 import { UserRole } from 'src/utils/enums';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { UpdateUserDto } from './dto/update.dto';
+import { RequestWithUser } from 'src/types/requests.type';
 
 @Controller('users')
 // guard check all method in controller
@@ -37,8 +44,14 @@ export class UsersController {
   @Delete(':id')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
   @UseGuards(RolesGuard)
-  @UseGuards(JwtAccessTokenGuard)
+  // @UseGuards(JwtAccessTokenGuard)
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  @Patch()
+  @UsePipes(new ValidationPipe())
+  update(@Req() req: RequestWithUser, @Body() body: UpdateUserDto) {
+    return this.usersService.update(req, body);
   }
 }

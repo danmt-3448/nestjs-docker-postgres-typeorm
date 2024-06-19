@@ -6,6 +6,7 @@ import { UsersModule } from './api/users/users.module';
 import { AddressModule } from './api/address/address.module';
 import { AuthModule } from './api/auth/auth.module';
 import { envConfig } from './constants/config';
+import { IsPhoneValidator } from './validators/is-phone-validator';
 
 @Module({
   imports: [
@@ -27,5 +28,6 @@ import { envConfig } from './constants/config';
     AddressModule,
     AuthModule,
   ],
+  providers: [IsPhoneValidator],
 })
 export class AppModule {}

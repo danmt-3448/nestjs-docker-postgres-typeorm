@@ -1,9 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { UserFindOneCondition } from 'src/types/auth';
 import { EntityManager, Repository } from 'typeorm';
 import { BaseService } from '../base/base.service';
+import { UpdateUserDto } from './dto/update.dto';
+import { RequestWithUser } from 'src/types/requests.type';
 
 @Injectable()
 export class UsersService extends BaseService {
@@ -34,15 +36,11 @@ export class UsersService extends BaseService {
     return user;
   }
 
-  async findByEmail(email: string) {
-    const user: UserEntity = await this.entityManager.findOneBy(UserEntity, {
-      email,
-    });
-    if (!user) {
-      throw new HttpException('Email is not exist!', HttpStatus.BAD_REQUEST);
-    }
+  async update(@Req() req: RequestWithUser, body: UpdateUserDto) {
+    await this.entityManager.save(UserEntity, { ...req.user, ...body });
+    const newUserData = { ...req.user, ...body };
 
-    return user;
+    return { message: 'Update user success', data: newUserData };
   }
 
   async remove(id: string) {
