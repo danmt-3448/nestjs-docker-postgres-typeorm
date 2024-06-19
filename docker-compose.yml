@@ -1,36 +1,3 @@
-# version: '3.8'
-# services:
-#   db:
-#     image: postgres:14-alpine
-#     environment:
-#       POSTGRES_USER: ${POSTGRES_USER}
-#       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#       POSTGRES_DB: ${POSTGRES_DB}
-#     ports:
-#       - "5432:5432"
-#     volumes:
-#       - postgres_data:/var/lib/postgresql/data
-
-#   app:
-#     build: .
-#     ports:
-#       - "${APP_PORT}:${APP_PORT}"
-#     environment:
-#       POSTGRES_HOST: ${POSTGRES_HOST}
-#       POSTGRES_PORT: ${POSTGRES_PORT}
-#       POSTGRES_USER: ${POSTGRES_USER}
-#       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#       POSTGRES_DB: ${POSTGRES_DB}
-#     networks:
-#       - nest-docker-postgres
-#     depends_on:
-#       - db
-# networks:
-#   nest-docker-postgres:
-
-# volumes:
-#   postgres_data:
-
 services:
   db:
     image: postgres:14-alpine

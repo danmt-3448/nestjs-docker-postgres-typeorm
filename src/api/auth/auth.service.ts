@@ -1,14 +1,20 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { EntityManager } from 'typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
-import { comparePassword, hash } from 'src/utils/bcrypt';
+import { compare, hash } from 'src/utils/bcrypt';
 import { SignInDto } from './dto/sign-in.dto';
 import { BaseService } from '../base/base.service';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { envConfig } from 'src/constants/config';
 import { TokenPayload } from 'src/types/auth';
+
 @Injectable()
 export class AuthService extends BaseService {
   constructor(
@@ -48,13 +54,15 @@ export class AuthService extends BaseService {
     });
     await this.entityManager.save(UserEntity, userData);
 
-    return { message: 'Sign up success!' };
+    return {
+      message: 'Sign up success!',
+    };
   }
 
   async signIn(signInDto: SignInDto) {
     const { email, password } = signInDto;
-    const user = await this.userService.findByEmail(email);
-    const checkPassword = comparePassword(password, user.password);
+    const user = await this.userService.findOneByCondition({ email });
+    const checkPassword = compare(password, user.password);
     if (!checkPassword) {
       throw new HttpException(
         'Email or password is wrong!',
@@ -86,8 +94,8 @@ export class AuthService extends BaseService {
     password: string,
   ): Promise<UserEntity> {
     try {
-      const user = await this.userService.findByEmail(email);
-      const checkPassword = await comparePassword(password, user.password);
+      const user = await this.userService.findOneByCondition({ email });
+      const checkPassword = await compare(password, user.password);
       if (!checkPassword) {
         throw new HttpException(
           'Email or password is wrong!',
@@ -102,5 +110,49 @@ export class AuthService extends BaseService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  async getUserIfRefreshTokenMatched(
+    user_id: string,
+    refresh_token: string,
+  ): Promise<UserEntity> {
+    try {
+      const user = await this.userService.findOneByCondition({ id: user_id });
+      if (!user) {
+        throw new UnauthorizedException();
+      }
+      const isMatchRefreshToken = await compare(
+        refresh_token,
+        await user.refresh_token,
+      );
+      if (!isMatchRefreshToken) {
+        throw new HttpException(
+          'Refresh token is invalid!',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async refreshToken(user_id) {
+    const user = await this.userService.findOneByCondition({ id: user_id });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    const access_token = this.generateAccessToken({
+      user_id,
+      verify: user.verify,
+    });
+
+    return {
+      message: 'Sign in success!',
+      data: {
+        access_token,
+      },
+    };
   }
 }

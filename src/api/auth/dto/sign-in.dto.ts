@@ -11,8 +11,3 @@ export class SignInDto {
   @IsString()
   password: string;
 }
-
-export interface ResponseSignInDto {
-  access_token: string;
-  refresh_token: string;
-}

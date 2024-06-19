@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UserDto } from './dto/user.dto';
-import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
+import { UserFindOneCondition } from 'src/types/auth';
+import { EntityManager, Repository } from 'typeorm';
 import { BaseService } from '../base/base.service';
 
 @Injectable()
@@ -19,13 +19,19 @@ export class UsersService extends BaseService {
     return await this.userRepository.find();
   }
 
-  async findOneFromDb(id: string) {
-    return await this.userRepository.findOne({ where: { id } });
-  }
+  async findOneByCondition(condition: UserFindOneCondition) {
+    const user: UserEntity = await this.entityManager.findOneBy(
+      UserEntity,
+      condition,
+    );
+    if (!user) {
+      throw new HttpException(
+        condition.email ? 'Email is not exist!' : 'User not found!',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-  async findOne(id: string) {
-    const user = await this.findOneFromDb(id);
-    return { ...user, age: Number(user.age) };
+    return user;
   }
 
   async findByEmail(email: string) {
@@ -39,20 +45,10 @@ export class UsersService extends BaseService {
     return user;
   }
 
-  async update(id: string, userDto: UserDto) {
-    const user = await this.findOneFromDb(id);
-    if (!user) throw new HttpException('user not found!', HttpStatus.NOT_FOUND);
-    await this.userRepository.update(id, {
-      ...userDto,
-      age: userDto.age.toString(),
-    });
-    return await this.findOneFromDb(id);
-  }
-
   async remove(id: string) {
-    const user = await this.findOneFromDb(id);
-    if (!user) throw new HttpException('user not found!', HttpStatus.NOT_FOUND);
+    const user = await this.findOneByCondition({ id });
     await this.userRepository.remove(user);
+
     return { message: 'Remove success' };
   }
 }
